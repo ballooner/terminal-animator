@@ -7,10 +7,17 @@
 
 static struct termios defaultTermSettings;
 
-void clearScreen();
+// Clear screen
+// return
+// -2 on failure to write
+int clearScreen()
+{
+    if (write(STDIN_FILENO, "\x1b[2J", 4) != 4) return -2;
+}
 
 void enterRawMode()
 {
+    clearScreen();
     // Make sure we have original settings so we can reset when leaving raw mode
     tcgetattr(STDIN_FILENO, &defaultTermSettings);
 
@@ -46,7 +53,7 @@ int setCursorPosition(int x, int y)
 
     char buffer[bufferSize];
 
-    if (fprintf(buffer, "\x1b[%d;%dH", y, x) < 0) return -1;
+    if (snprintf(buffer, bufferSize, "\x1b[%d;%dH", y, x) < 0) return -1;
     if (write(STDIN_FILENO, buffer, bufferSize) != bufferSize) return -2;
 
     return 0;
@@ -65,13 +72,12 @@ int getCursorPosition(int *x, int *y)
     // Read VT100 Cursor Report
     char buffer[32];
     int i = 0;
-    while ((i < sizeof(buffer) && read(STDIN_FILENO, buffer + i, 1) == 1)
-            || buffer[i++] == 'R');
+    while (read(STDIN_FILENO, buffer + i, 1) == 1 && buffer[i] != 'R' && i++ < sizeof(buffer) - 1);
     buffer[i] = '\0';
 
     // Verify that we read a VT100 report
     if (buffer[0] != '\x1b' && buffer[1] != '[') return -1;
-    fprintf(buffer, "\x1b[%d;%dR", *y, *x);
+    sscanf(buffer, "\x1b[%d;%dR", y, x);
 
     return 0;
 }
