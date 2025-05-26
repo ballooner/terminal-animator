@@ -9,10 +9,13 @@ static struct termios defaultTermSettings;
 
 // Clear screen
 // return
+// 0 on success
 // -2 on failure to write
 int clearScreen()
 {
     if (write(STDIN_FILENO, "\x1b[2J", 4) != 4) return -2;
+
+    return 0;
 }
 
 void enterRawMode()
