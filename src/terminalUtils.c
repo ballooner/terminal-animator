@@ -3,9 +3,11 @@
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
+#include <errno.h>
 #include "terminalUtils.h"
 
-static struct termios defaultTermSettings;
+struct TerminalInfo terminalInfo;
 
 // Clear screen
 // return
@@ -22,9 +24,9 @@ void enterRawMode()
 {
     clearScreen();
     // Make sure we have original settings so we can reset when leaving raw mode
-    tcgetattr(STDIN_FILENO, &defaultTermSettings);
+    tcgetattr(STDIN_FILENO, &terminalInfo.defaultSettings);
 
-    struct termios rawSettings = defaultTermSettings;
+    struct termios rawSettings = terminalInfo.defaultSettings;
 
     // Set all the raw settings
     rawSettings.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR 
@@ -37,13 +39,30 @@ void enterRawMode()
     // Set terminal to raw settings
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawSettings);
     atexit(leaveRawMode);
+
+    // Set up window resize handler
+    setupResizeHandler();
 }
 
 void leaveRawMode()
 {
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &defaultTermSettings);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminalInfo.defaultSettings);
+    clearScreen();
 }
 
+void updateTerminalSize()
+{
+    getTerminalSize();
+}
+
+void setupResizeHandler()
+{
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = updateTerminalSize;
+    if (sigaction(SIGWINCH, &sa, NULL) == -1) perror("sigaction");
+}
 // Set cursor position to (x,y)
 // return 
 // 0 on success
@@ -90,7 +109,7 @@ int getCursorPosition(int *x, int *y)
 // return
 // 0 on success
 // -2 on failure to write
-int getTerminalSize(int *height, int *width)
+int getTerminalSize()
 {
     struct winsize ws;
 
@@ -98,10 +117,10 @@ int getTerminalSize(int *height, int *width)
     {                                               // use VT100 commands
         if (write(STDIN_FILENO, "\x1b[999C\x1b[999B", 12) != 12) return -2;
 
-        getCursorPosition(height, width);
+        getCursorPosition(&terminalInfo.terminalHeight, &terminalInfo.terminalWidth);
     } else
     {
-        *width = ws.ws_col;
-        *height = ws.ws_row;
+        terminalInfo.terminalWidth = ws.ws_col;
+        terminalInfo.terminalHeight = ws.ws_row;
     }
 }

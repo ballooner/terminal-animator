@@ -6,25 +6,23 @@
 int main(void)
 {
     enterRawMode();
+    getTerminalSize();
     
-    int x;
-    int y;
-    int termWidth;
-    int termHeight;
-
-    //setCursorPosition(30,30);
-    //getCursorPosition(&x, &y);
-    //getTerminalSize(&termWidth, &termHeight);
-    setCursorPosition(0,0);
-    //write(STDIN_FILENO, "\x1b[0;0H", 6);
-    //printf("x: %d, y: %d\r\ntermWidth: %d, termHeight: %d\r\n", x, y, termWidth, termHeight);
-
     char c;
     while(1)
     {
         read(STDIN_FILENO, &c, 1);
 
-        if (c == 'q') exit(0);
+        if (c == 'q') 
+	{
+	    exit(0);
+	} else if (c == 'g')
+	{
+	    printf("height: %d, width: %d\r\n", terminalInfo.terminalHeight, terminalInfo.terminalWidth);
+	}
+
+	//Clear c
+	c = '\0';
     }
 
     return 0;
