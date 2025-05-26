@@ -55,9 +55,10 @@ int setCursorPosition(int x, int y)
     unsigned int bufferSize = 4 + sizeof(x) + sizeof(y);
 
     char buffer[bufferSize];
+    int bytesWritten;
 
-    if (snprintf(buffer, bufferSize, "\x1b[%d;%dH", y, x) < 0) return -1;
-    if (write(STDIN_FILENO, buffer, bufferSize) != bufferSize) return -2;
+    if ((bytesWritten = sprintf(buffer, "\x1b[%d;%dH", y, x)) < 0) return -1;
+    if (write(STDIN_FILENO, buffer, bytesWritten) != bytesWritten) return -2;
 
     return 0;
 }

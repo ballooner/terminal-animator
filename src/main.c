@@ -12,11 +12,12 @@ int main(void)
     int termWidth;
     int termHeight;
 
-    setCursorPosition(30,30);
-    getCursorPosition(&x, &y);
-    getTerminalSize(&termWidth, &termHeight);
+    //setCursorPosition(30,30);
+    //getCursorPosition(&x, &y);
+    //getTerminalSize(&termWidth, &termHeight);
     setCursorPosition(0,0);
-    printf("x: %d, y: %d\r\ntermWidth: %d, termHeight: %d\r\n", x, y, termWidth, termHeight);
+    //write(STDIN_FILENO, "\x1b[0;0H", 6);
+    //printf("x: %d, y: %d\r\ntermWidth: %d, termHeight: %d\r\n", x, y, termWidth, termHeight);
 
     char c;
     while(1)
