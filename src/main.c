@@ -2,15 +2,29 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "terminalUtils.h"
+#include "frameBuffer.h"
 
-int main(void)
+buffer_t screenBuffer;
+
+void createMenuFrame(buffer_t *buffer)
 {
-    enterRawMode();
-    getTerminalSize();
+
+}
+
+void renderBuffer(buffer_t *buffer)
+{
+
+}
+
+void inputHandler()
+{
     
+
     char c;
     while(1)
     {
+	
+
         read(STDIN_FILENO, &c, 1);
 
         if (c == 'q') 
@@ -18,12 +32,19 @@ int main(void)
 	    exit(0);
 	} else if (c == 'g')
 	{
-	    printf("height: %d, width: %d\r\n", terminalInfo.terminalHeight, terminalInfo.terminalWidth);
 	}
 
 	//Clear c
 	c = '\0';
-    }
+    }   
+}
+
+int main(void)
+{
+    enterRawMode();
+
+
+    inputHandler();
 
     return 0;
 }
