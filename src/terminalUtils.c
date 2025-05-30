@@ -12,10 +12,12 @@ struct TerminalInfo terminalInfo;
 // Clear screen
 // return
 // 0 on success
+// -1 on failure to set cursor pos
 // -2 on failure to write
 int clearScreen()
 {
     if (write(STDIN_FILENO, "\x1b[2J", 4) != 4) return -2;
+    if (setCursorPosition(0, 0) < 0) return -1;
 
     return 0;
 }

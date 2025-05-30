@@ -3,6 +3,13 @@
 
 #include <termios.h>
 
+enum ScreenState
+{
+    MAIN = 1,
+    ANIMATE = 2,
+    PLAYER = 3
+};
+
 struct TerminalInfo
 {
     struct termios defaultSettings;
@@ -10,6 +17,7 @@ struct TerminalInfo
     int terminalHeight;
     int cursorX;
     int cursorY;
+    enum ScreenState screen;
 };
 
 extern struct TerminalInfo terminalInfo;
