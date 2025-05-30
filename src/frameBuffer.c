@@ -109,9 +109,11 @@ int replaceBuffer(const buffer_t *newBuffer, buffer_t *oldBuffer)
     {
 	for (int j = 0; j < oldBuffer->width; j++)
 	{
-	    oldBuffer[i][j] = newBuffer[i][j];
+	    oldBuffer->frameData[i][j] = newBuffer->frameData[i][j];
 	}
     }
 
     return 0;
 }
+
+
