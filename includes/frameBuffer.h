@@ -16,10 +16,7 @@ typedef struct Buffer
 int allocateFrameBuffer(buffer_t *buffer);
 
 // Deallocate all the frameData memory
-// return:
-// -1 if buffer is empty
-// 0 on success
-int freeBuffer(buffer_t *buffer);
+void freeBuffer(buffer_t *buffer);
 
 // Resize the frameData array and change size of buffer
 // to new height/width
@@ -29,6 +26,9 @@ int freeBuffer(buffer_t *buffer);
 int resizeBuffer(int height, int width, buffer_t *buffer);
 
 // Replace a buffer with a new buffer
+// return:
+// -1 on invalid newBuffer contents
+// 0 on success
 int replaceBuffer(const buffer_t *newBuffer, buffer_t *oldBuffer);
 
 #endif

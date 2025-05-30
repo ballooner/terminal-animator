@@ -40,14 +40,11 @@ int allocateFrameBuffer(buffer_t *buffer)
 }
 
 // Deallocate all the frameData memory
-// return:
-// -1 if buffer is empty
-// 0 on success
-int freeBuffer(buffer_t *buffer)
+void freeBuffer(buffer_t *buffer)
 {
-    // Make sure there is memory to free
+    // Return if already empty
     if (buffer->frameData == NULL)
-	return -1;
+	return;
     
     // Free memory and set to NULL
     for (int i = 0; i < buffer->height; i++)
@@ -57,8 +54,6 @@ int freeBuffer(buffer_t *buffer)
     free(buffer->frameData);
 
     buffer->frameData = NULL;
-
-    return 0;
 }
 
 // Resize the frameData array and change size of buffer
@@ -95,8 +90,28 @@ int resizeBuffer(int height, int width, buffer_t *buffer)
 }
 
 // Replace a buffer with a new buffer
+// return:
+// -1 on invalid newBuffer contents
+// 0 on success
 int replaceBuffer(const buffer_t *newBuffer, buffer_t *oldBuffer)
 {
+    if (newBuffer->height < 0 || newBuffer->width < 0 || newBuffer->frameData == NULL)
+	return -1;
+
+    freeBuffer(oldBuffer);
+
+    oldBuffer->height = newBuffer->height;
+    oldBuffer->width = newBuffer->width;
+
+    allocateFrameBuffer(oldBuffer);
+
+    for (int i = 0; i < oldBuffer->height; i++)
+    {
+	for (int j = 0; j < oldBuffer->width; j++)
+	{
+	    oldBuffer[i][j] = newBuffer[i][j];
+	}
+    }
 
     return 0;
 }
