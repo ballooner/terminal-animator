@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "terminalUtils.h"
 #include "frameBuffer.h"
 
@@ -14,7 +15,8 @@ int validateBuffer(buffer_t *buffer)
     return 0;
 }
 
-void renderMainMenu()
+// Main screen functionality
+void renderMainScreen()
 {
     clearScreen();
 
@@ -23,22 +25,86 @@ void renderMainMenu()
     printf("3. Quit\r\n");
 }
 
+void mainScreenInputHandler(const char input)
+{
+	switch (input)
+	{
+	    case '1':
+		terminalInfo.screen = ANIMATE;
+		break;
+	    case '2':
+		terminalInfo.screen = PLAYER;
+		break;
+	    case '3':
+		exit(0);
+		break;
+	}
+}
+
+// Animate screen functionality
+void renderAnimateScreen()
+{
+    clearScreen();
+}
+
+void animateScreenInputHandler(const char input)
+{
+	switch (input)
+	{
+	    case 'q':
+		exit(0);
+		break;
+	}
+}
+
+// Play screen functionality
+void renderPlayScreen()
+{
+    clearScreen();
+}
+
+void playScreenInputHandler(const char input)
+{
+	switch (input)
+	{
+	    case 'q':
+		exit(0);
+		break;
+	}
+}
 void inputHandler()
 {
-    char c;
+    char c = '\0';
     while(1)
     {
-	if (terminalInfo.screen == MAIN)
-	    renderMainMenu();
-
-        read(STDIN_FILENO, &c, 1);
-
-        if (c == '3') 
+	switch(terminalInfo.screen)
 	{
-	    exit(0);
+	    case MAIN:
+		renderMainScreen();
+		break;
+	    case ANIMATE:
+		renderAnimateScreen();
+		break;
+	    case PLAYER:
+		renderPlayScreen();
+		break;
 	}
 
-	c = '\0';
+        read(STDIN_FILENO, &c, 1);
+	c = tolower(c);
+
+	switch(terminalInfo.screen)
+	{
+	    case MAIN:
+		mainScreenInputHandler(c);
+		break;
+	    case ANIMATE:
+		animateScreenInputHandler(c);
+		break;
+	    case PLAYER:
+		playScreenInputHandler(c);
+		break;
+	}
     }   
 }
 
