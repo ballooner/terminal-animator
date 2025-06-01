@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "terminalUtils.h"
 #include "frameBuffer.h"
+#include "fileUtils.h"
 
 buffer_t screenBuffer;
 
@@ -111,6 +112,7 @@ void inputHandler()
 
 int main(void)
 {
+    /*
     // Init
     enterRawMode();
     getTerminalSize();
@@ -118,6 +120,9 @@ int main(void)
     terminalInfo.screen = MAIN;
 
     inputHandler();
+    */
 
+    printf("%d\n", doesDirExist("../animations"));
+    
     return 0;
 }
